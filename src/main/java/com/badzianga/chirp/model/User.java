@@ -1,11 +1,11 @@
 package com.badzianga.chirp.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +14,9 @@ public class User {
     private String email;
     private String username;
     private String password;
+
+    @OneToMany(mappedBy = "author")
+    private List<Post> posts;
 
     public User() {}
 
