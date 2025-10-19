@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -42,5 +44,19 @@ public class UserRepositoryTest {
         // then
         assertThat(foundExisting).isTrue();
         assertThat(notFoundNotExisting).isFalse();
+    }
+
+    @Test
+    void shouldFindUsersWithSimilarUsername() {
+        // given
+        userRepository.save(new User("user@email.com", "User", "password"));
+        userRepository.save(new User("user123@email.com", "user123", "password"));
+        userRepository.save(new User("another@email.com", "another", "password"));
+
+        // when
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase("USER");
+
+        // then
+        assertThat(users.size()).isEqualTo(2);
     }
 }

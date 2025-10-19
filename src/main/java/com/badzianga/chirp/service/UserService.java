@@ -27,4 +27,8 @@ public class UserService {
         }
         return userRepository.save(new User(request.getEmail(), request.getUsername(), request.getPassword()));
     }
+
+    public List<User> findUsersWithSimilarUsername(String username) {
+        return userRepository.findByUsernameContainingIgnoreCase(username);
+    }
 }

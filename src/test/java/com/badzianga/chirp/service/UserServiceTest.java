@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,5 +70,24 @@ public class UserServiceTest {
                 .isInstanceOf(UserAlreadyExistsException.class)
                 .hasMessageContaining("This username is taken");
         Mockito.verify(userRepository, Mockito.never()).save(any(User.class));
+    }
+
+    @Test
+    void shouldReturnListOfUsersWithSimilarUsername() {
+        // given
+        List<User> users = List.of(
+                new User("user@email.com", "user", "password"),
+                new User("user123@email.com", "User123", "password")
+        );
+
+        Mockito.when(userRepository.findByUsernameContainingIgnoreCase("USER")).thenReturn(users);
+
+        // when
+        List<User> found = userService.findUsersWithSimilarUsername("USER");
+        List<User> notFound = userService.findUsersWithSimilarUsername("not existing");
+
+        // then
+        assertThat(found).isEqualTo(users);
+        assertThat(notFound).isEqualTo(List.of());
     }
 }
