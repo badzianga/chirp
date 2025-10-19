@@ -1,0 +1,46 @@
+package com.badzianga.chirp.repository;
+
+import com.badzianga.chirp.model.User;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+@ActiveProfiles("test")
+public class UserRepositoryTest {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Test
+    void shouldCheckIfUserExistsByEmail() {
+        // given
+        User user = new User("user@email.com", "user", "password");
+        userRepository.save(user);
+
+        // when
+        boolean foundExisting = userRepository.existsByEmail("user@email.com");
+        boolean notFoundNotExisting = userRepository.existsByUsername("notexisting@email.com");
+
+        // then
+        assertThat(foundExisting).isTrue();
+        assertThat(notFoundNotExisting).isFalse();
+    }
+
+    @Test
+    void shouldCheckIfUserExistsByUsername() {
+        // given
+        User user = new User("user@email.com", "user", "password");
+        userRepository.save(user);
+
+        // when
+        boolean foundExisting = userRepository.existsByUsername("user");
+        boolean notFoundNotExisting = userRepository.existsByUsername("not-existing-user");
+
+        // then
+        assertThat(foundExisting).isTrue();
+        assertThat(notFoundNotExisting).isFalse();
+    }
+}

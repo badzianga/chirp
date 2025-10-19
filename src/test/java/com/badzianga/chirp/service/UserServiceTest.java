@@ -1,0 +1,72 @@
+package com.badzianga.chirp.service;
+
+import com.badzianga.chirp.exception.UserAlreadyExistsException;
+import com.badzianga.chirp.model.User;
+import com.badzianga.chirp.repository.UserRepository;
+import com.badzianga.chirp.request.CreateUserRequest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+
+public class UserServiceTest {
+    private UserRepository userRepository;
+    private UserService userService;
+
+    @BeforeEach
+    public void setUp() {
+        userRepository = Mockito.mock(UserRepository.class);
+        userService = new UserService(userRepository);
+    }
+
+    @Test
+    void shouldAddUser() {
+        // given
+        CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
+        User user = new User("test@email.com", "test", "password");
+
+        Mockito.when(userRepository.existsByEmail(request.email)).thenReturn(false);
+        Mockito.when(userRepository.existsByUsername(request.username)).thenReturn(false);
+        Mockito.when(userRepository.save(any(User.class))).thenReturn(user);
+
+        // when
+        User result = userService.addUser(request);
+
+        // then
+        assertThat(result.getEmail()).isEqualTo(request.email);
+        assertThat(result.getUsername()).isEqualTo(request.username);
+        assertThat(result.getPassword()).isEqualTo(request.password);
+        Mockito.verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void shouldThrowExceptionIfEmailAlreadyExists() {
+        // given
+        CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
+
+        Mockito.when(userRepository.existsByEmail(request.email)).thenReturn(true);
+
+        // when and then
+        assertThatThrownBy(() -> userService.addUser(request))
+                .isInstanceOf(UserAlreadyExistsException.class)
+                .hasMessageContaining("User with this email is already registered");
+        Mockito.verify(userRepository, Mockito.never()).save(any(User.class));
+    }
+
+    @Test
+    void shouldThrowExceptionIfUsernameAlreadyExists() {
+        // given
+        CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
+
+        Mockito.when(userRepository.existsByUsername(request.username)).thenReturn(true);
+
+        // when and then
+        assertThatThrownBy(() -> userService.addUser(request))
+                .isInstanceOf(UserAlreadyExistsException.class)
+                .hasMessageContaining("This username is taken");
+        Mockito.verify(userRepository, Mockito.never()).save(any(User.class));
+    }
+}
