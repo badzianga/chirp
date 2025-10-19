@@ -32,8 +32,8 @@ public class UserControllerTest {
     @Test
     void shouldReturnAllUsers() throws Exception {
         Mockito.when(userService.getAllUsers()).thenReturn(List.of(
-                new User(1L, "test@email.com", "test", "password"),
-                new User(2L, "another@email.com", "another", "p@ssw0rd")
+                new User("test@email.com", "test", "password"),
+                new User("another@email.com", "another", "p@ssw0rd")
         ));
 
         mockMvc.perform(get('/' + apiPrefix + "/users/all").contentType(MediaType.APPLICATION_JSON))

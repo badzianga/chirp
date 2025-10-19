@@ -28,17 +28,17 @@ public class UserServiceTest {
         CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
         User user = new User("test@email.com", "test", "password");
 
-        Mockito.when(userRepository.existsByEmail(request.email)).thenReturn(false);
-        Mockito.when(userRepository.existsByUsername(request.username)).thenReturn(false);
+        Mockito.when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
+        Mockito.when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
         Mockito.when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
         User result = userService.addUser(request);
 
         // then
-        assertThat(result.getEmail()).isEqualTo(request.email);
-        assertThat(result.getUsername()).isEqualTo(request.username);
-        assertThat(result.getPassword()).isEqualTo(request.password);
+        assertThat(result.getEmail()).isEqualTo(request.getEmail());
+        assertThat(result.getUsername()).isEqualTo(request.getUsername());
+        assertThat(result.getPassword()).isEqualTo(request.getPassword());
         Mockito.verify(userRepository).save(any(User.class));
     }
 
@@ -47,7 +47,7 @@ public class UserServiceTest {
         // given
         CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
 
-        Mockito.when(userRepository.existsByEmail(request.email)).thenReturn(true);
+        Mockito.when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
 
         // when and then
         assertThatThrownBy(() -> userService.addUser(request))
@@ -61,7 +61,7 @@ public class UserServiceTest {
         // given
         CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
 
-        Mockito.when(userRepository.existsByUsername(request.username)).thenReturn(true);
+        Mockito.when(userRepository.existsByUsername(request.getUsername())).thenReturn(true);
 
         // when and then
         assertThatThrownBy(() -> userService.addUser(request))
