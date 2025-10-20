@@ -5,20 +5,18 @@ import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.request.CreateUserRequest;
 import com.badzianga.chirp.response.ApiResponse;
 import com.badzianga.chirp.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/users")
 public class UserController {
     private final UserService service;
-
-    public UserController(UserService service) {
-        this.service = service;
-    }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllUsers() {
