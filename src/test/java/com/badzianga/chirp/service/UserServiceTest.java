@@ -30,8 +30,8 @@ public class UserServiceTest {
         CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
         User user = new User("test@email.com", "test", "password");
 
-        Mockito.when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
-        Mockito.when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
+        Mockito.when(userRepository.existsByEmailIgnoreCase(request.getEmail())).thenReturn(false);
+        Mockito.when(userRepository.existsByUsernameIgnoreCase(request.getUsername())).thenReturn(false);
         Mockito.when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
@@ -49,7 +49,7 @@ public class UserServiceTest {
         // given
         CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
 
-        Mockito.when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
+        Mockito.when(userRepository.existsByEmailIgnoreCase(request.getEmail())).thenReturn(true);
 
         // when and then
         assertThatThrownBy(() -> userService.addUser(request))
@@ -63,7 +63,7 @@ public class UserServiceTest {
         // given
         CreateUserRequest request = new CreateUserRequest("test@email.com", "test", "password");
 
-        Mockito.when(userRepository.existsByUsername(request.getUsername())).thenReturn(true);
+        Mockito.when(userRepository.existsByUsernameIgnoreCase(request.getUsername())).thenReturn(true);
 
         // when and then
         assertThatThrownBy(() -> userService.addUser(request))

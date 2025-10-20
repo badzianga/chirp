@@ -19,10 +19,10 @@ public class UserService {
     }
 
     public User addUser(CreateUserRequest request) throws UserAlreadyExistsException {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             throw new UserAlreadyExistsException("User with this email is already registered");
         }
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsernameIgnoreCase(request.getUsername())) {
             throw new UserAlreadyExistsException("This username is taken");
         }
         return userRepository.save(new User(request.getEmail(), request.getUsername(), request.getPassword()));

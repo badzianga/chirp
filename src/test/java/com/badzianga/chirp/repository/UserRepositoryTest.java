@@ -23,8 +23,8 @@ public class UserRepositoryTest {
         userRepository.save(user);
 
         // when
-        boolean foundExisting = userRepository.existsByEmail("user@email.com");
-        boolean notFoundNotExisting = userRepository.existsByUsername("notexisting@email.com");
+        boolean foundExisting = userRepository.existsByEmailIgnoreCase("user@email.com");
+        boolean notFoundNotExisting = userRepository.existsByUsernameIgnoreCase("notexisting@email.com");
 
         // then
         assertThat(foundExisting).isTrue();
@@ -38,8 +38,8 @@ public class UserRepositoryTest {
         userRepository.save(user);
 
         // when
-        boolean foundExisting = userRepository.existsByUsername("user");
-        boolean notFoundNotExisting = userRepository.existsByUsername("not-existing-user");
+        boolean foundExisting = userRepository.existsByUsernameIgnoreCase("user");
+        boolean notFoundNotExisting = userRepository.existsByUsernameIgnoreCase("not-existing-user");
 
         // then
         assertThat(foundExisting).isTrue();
