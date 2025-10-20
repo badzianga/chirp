@@ -9,8 +9,13 @@ with proper security, testing, and front-end.
 All endpoints start with prefix `/api/v1`. When something is returned, it is wrapped in JSON containing a message and
 (optionally) an object.
 
+### auth
+
+- POST /user/register - add a new user using request body {"email", "username", "password"} and return JSON with created
+user data
+
+
 ### user
 
 - GET /user/all - return list of all registered users
-- POST /user/add - add a new user using request body {"email", "username", "password"} and return created user with ID
 - GET /user/find/{username} - return list of users with username similar to passed as path variable
