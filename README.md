@@ -11,11 +11,12 @@ All endpoints start with prefix `/api/v1`. When something is returned, it is wra
 
 ### auth
 
-- POST /user/register - add a new user using request body {"email", "username", "password"} and return JSON with created
+- `POST /auth/register` - add a new user using request body {"email", "username", "password"} and return JSON with created
 user data
 
 
 ### user
 
-- GET /user/all - return list of all registered users
-- GET /user/find/{username} - return list of users with username similar to passed as path variable
+- `GET /users` - return list of all registered users
+- `GET /users/{username}` - return json with data of the found user
+- `GET /users/find/{username}` - return list of users with username similar to passed as path variable
