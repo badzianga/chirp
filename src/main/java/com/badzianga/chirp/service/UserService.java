@@ -1,5 +1,6 @@
 package com.badzianga.chirp.service;
 
+import com.badzianga.chirp.exception.ResourceNotFoundException;
 import com.badzianga.chirp.exception.UserAlreadyExistsException;
 import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.repository.UserRepository;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,14 @@ public class UserService {
             throw new UserAlreadyExistsException("This username is taken");
         }
         return userRepository.save(new User(request.getEmail(), request.getUsername(), request.getPassword()));
+    }
+
+    public User findUserByUsername(String username) {
+        Optional<User> user = userRepository.findByUsernameIgnoreCase(username);
+        if (user.isPresent()) {
+            return user.get();
+        }
+        throw new ResourceNotFoundException("User not found");
     }
 
     public List<User> findUsersWithSimilarUsername(String username) {

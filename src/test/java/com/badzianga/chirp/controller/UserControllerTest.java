@@ -1,5 +1,6 @@
 package com.badzianga.chirp.controller;
 
+import com.badzianga.chirp.exception.ResourceNotFoundException;
 import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -26,8 +27,8 @@ public class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
-    @Value("${api.prefix}")
-    private String apiPrefix;
+    @Value("/${api.prefix}/users")
+    private String url;
 
     @Test
     void shouldReturnAllUsers() throws Exception {
@@ -36,12 +37,34 @@ public class UserControllerTest {
                 new User("another@email.com", "another", "p@ssw0rd")
         ));
 
-        mockMvc.perform(get('/' + apiPrefix + "/users/all").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.data[0].username").value("test"))
                 .andExpect(jsonPath("$.data[1].username").value("another"));
 
+    }
+
+    @Test
+    void shouldReturnUserWithGivenUsername() throws Exception {
+        Mockito.when(userService.findUserByUsername("test"))
+                .thenReturn(new User("test@email.com", "test", "password"));
+
+        mockMvc.perform(get(url + "/test").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.data.username").value("test"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserWithGivenUsernameDoesNotExist() throws Exception {
+        Mockito.when(userService.findUserByUsername("test"))
+                .thenThrow(new ResourceNotFoundException("User not found"));
+
+        mockMvc.perform(get(url + "/test").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User not found"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
     @Test
@@ -51,7 +74,7 @@ public class UserControllerTest {
                 new User("test123@email.com", "Test123", "password")
         ));
 
-        mockMvc.perform(get('/' + apiPrefix + "/users/find/TEST").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(url + "/find/TEST").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.data").isArray());

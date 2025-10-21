@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,6 +47,28 @@ public class UserRepositoryTest {
         assertThat(notFoundNotExisting).isFalse();
     }
 
+    @Test
+    void shouldFindUserByUsername() {
+        // given
+        userRepository.save(new User("user@email.com", "user", "password"));
+
+        // when
+        Optional<User> user = userRepository.findByUsernameIgnoreCase("USER");
+
+        // then
+        assertThat(user).isPresent();
+        assertThat(user.get().getUsername()).isEqualTo("user");
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalWhenUserWithGivenUsernameDoesNotExist() {
+        // when
+        Optional<User> user = userRepository.findByUsernameIgnoreCase("USER");
+
+        // then
+        assertThat(user).isNotPresent();
+    }
+    
     @Test
     void shouldFindUsersWithSimilarUsername() {
         // given

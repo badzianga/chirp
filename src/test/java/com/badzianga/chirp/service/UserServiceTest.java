@@ -1,5 +1,6 @@
 package com.badzianga.chirp.service;
 
+import com.badzianga.chirp.exception.ResourceNotFoundException;
 import com.badzianga.chirp.exception.UserAlreadyExistsException;
 import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.repository.UserRepository;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -70,6 +72,34 @@ public class UserServiceTest {
                 .isInstanceOf(UserAlreadyExistsException.class)
                 .hasMessageContaining("This username is taken");
         Mockito.verify(userRepository, Mockito.never()).save(any(User.class));
+    }
+
+    @Test
+    void shouldReturnUserWithGivenUsername() {
+        // given
+        User user = new User("test@email.com", "test", "password");
+
+        Mockito.when(userRepository.findByUsernameIgnoreCase("TEST")).thenReturn(Optional.of(user));
+
+        // when
+        User foundUser = userService.findUserByUsername("TEST");
+
+        // then
+        assertThat(foundUser.getUsername()).isEqualTo(user.getUsername());
+        assertThat(foundUser.getEmail()).isEqualTo(user.getEmail());
+        assertThat(foundUser.getPassword()).isEqualTo(user.getPassword());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserWithGivenUsernameDoesNotExist() {
+        // given
+        Mockito.when(userRepository.findByUsernameIgnoreCase("test"))
+                .thenThrow(new ResourceNotFoundException("User not found"));
+
+        // when & then
+        assertThatThrownBy(() -> userService.findUserByUsername("test"))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("User not found");
     }
 
     @Test
