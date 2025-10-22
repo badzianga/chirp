@@ -33,10 +33,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
-
-    @GetMapping("/find/{username}")
-    public ResponseEntity<ApiResponse> findUsersWithSimilarUsername(@PathVariable String username) {
-        List<User> users = service.findUsersWithSimilarUsername(username);
-        return ResponseEntity.ok(new ApiResponse("success", users));
-    }
 }

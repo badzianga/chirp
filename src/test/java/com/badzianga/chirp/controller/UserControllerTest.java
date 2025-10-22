@@ -66,17 +66,4 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("User not found"))
                 .andExpect(jsonPath("$.data").doesNotExist());
     }
-
-    @Test
-    void shouldReturnUsersWithSimilarUsername() throws Exception {
-        Mockito.when(userService.findUsersWithSimilarUsername("TEST")).thenReturn(List.of(
-                new User("test@email.com", "test", "password"),
-                new User("test123@email.com", "Test123", "password")
-        ));
-
-        mockMvc.perform(get(url + "/find/TEST").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
-                .andExpect(jsonPath("$.data").isArray());
-    }
 }
