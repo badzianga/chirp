@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -64,6 +65,29 @@ public class UserControllerTest {
         mockMvc.perform(get(url + "/test").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("User not found"))
+                .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @Test
+    void shouldDeleteUser() throws Exception {
+        Long userId = 1L;
+        Mockito.doNothing().when(userService).deleteUser(userId);
+
+        mockMvc.perform(delete(url + '/' + userId).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserToDeleteDoesNotExist() throws Exception {
+        Long userId = 99L;
+        Mockito.doThrow(new ResourceNotFoundException("User with given id does not exist"))
+                .when(userService).deleteUser(userId);
+
+        mockMvc.perform(delete(url + '/' + userId).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User with given id does not exist"))
                 .andExpect(jsonPath("$.data").doesNotExist());
     }
 }

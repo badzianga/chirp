@@ -41,4 +41,10 @@ public class UserService {
     public List<User> findUsersWithSimilarUsername(String username) {
         return userRepository.findByUsernameContainingIgnoreCase(username);
     }
+
+    public void deleteUser(Long userId) {
+        userRepository.findById(userId).ifPresentOrElse(userRepository::delete, () -> {
+            throw new ResourceNotFoundException("User with given id does not exist");
+        });
+    }
 }

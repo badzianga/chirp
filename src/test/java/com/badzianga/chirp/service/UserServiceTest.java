@@ -120,4 +120,35 @@ public class UserServiceTest {
         assertThat(found).isEqualTo(users);
         assertThat(notFound).isEqualTo(List.of());
     }
+
+    @Test
+    void shouldDeleteUserWhenExists() {
+        // given
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // when
+        userService.deleteUser(userId);
+
+        // then
+        Mockito.verify(userRepository, Mockito.times(1)).delete(user);
+        Mockito.verify(userRepository, Mockito.never()).save(any(User.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserToDeleteDoesNotExist() {
+        // given
+        Long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // when + then
+        assertThatThrownBy(() -> userService.deleteUser(userId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("User with given id does not exist");
+        Mockito.verify(userRepository, Mockito.never()).delete(any());
+    }
 }
