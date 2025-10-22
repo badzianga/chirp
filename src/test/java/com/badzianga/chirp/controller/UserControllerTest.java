@@ -25,7 +25,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private UserService userService;
+    private final UserService userService = Mockito.mock(UserService.class);
 
     @Value("/${api.prefix}/users")
     private String url;

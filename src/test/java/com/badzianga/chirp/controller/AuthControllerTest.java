@@ -29,7 +29,7 @@ public class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private UserService userService;
+    private final UserService userService = Mockito.mock(UserService.class);
 
     @Value("/${api.prefix}/auth")
     private String url;
