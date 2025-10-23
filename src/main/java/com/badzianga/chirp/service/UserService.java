@@ -30,7 +30,7 @@ public class UserService {
         return userRepository.save(new User(request.getEmail(), request.getUsername(), request.getPassword()));
     }
 
-    public User findUserByUsername(String username) {
+    public User findUserByUsername(String username) throws ResourceNotFoundException {
         Optional<User> user = userRepository.findByUsernameIgnoreCase(username);
         if (user.isPresent()) {
             return user.get();
@@ -42,7 +42,7 @@ public class UserService {
         return userRepository.findByUsernameContainingIgnoreCase(username);
     }
 
-    public void deleteUser(Long userId) {
+    public void deleteUser(Long userId) throws ResourceNotFoundException {
         userRepository.findById(userId).ifPresentOrElse(userRepository::delete, () -> {
             throw new ResourceNotFoundException("User with given id does not exist");
         });
