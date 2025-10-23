@@ -94,7 +94,7 @@ public class UserServiceTest {
     void shouldThrowExceptionWhenUserWithGivenUsernameDoesNotExist() {
         // given
         Mockito.when(userRepository.findByUsernameIgnoreCase("test"))
-                .thenThrow(new ResourceNotFoundException("User not found"));
+                .thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> userService.findUserByUsername("test"))
