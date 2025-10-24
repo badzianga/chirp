@@ -13,15 +13,15 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
 
-    List<Post> getAllPosts() {
+    public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
 
-    List<Post> getPostsOfAuthor(Long authorId) {
+    public List<Post> getPostsOfAuthor(Long authorId) {
         return postRepository.findByAuthor_Id(authorId);
     }
 
-    Post getPostById(Long postId) throws ResourceNotFoundException {
+    public Post getPostById(Long postId) throws ResourceNotFoundException {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
     }
