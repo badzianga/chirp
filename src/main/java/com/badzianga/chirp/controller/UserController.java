@@ -15,12 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/users")
 public class UserController {
-    private final UserService service;
     private final UserService userService;
 
     @GetMapping
     public ResponseEntity<ApiResponse> getAllUsers() {
-        List<User> users = service.getAllUsers();
+        List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(new ApiResponse("success", users));
     }
 
