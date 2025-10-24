@@ -86,4 +86,35 @@ public class PostServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Post not found");
     }
+
+    @Test
+    void shouldDeletePostWhenExists() {
+        // given
+        Long postId = 100L;
+        Post post = new Post("Content", new User("test@email.com", "test", "password"));
+        post.setId(postId);
+
+        Mockito.when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+
+        // when
+        postService.deletePost(postId);
+
+        // then
+        Mockito.verify(postRepository, Mockito.times(1)).delete(post);
+        Mockito.verify(postRepository, Mockito.never()).save(any(Post.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPostToDeleteDoesNotExist() {
+        // given
+        Long postId = 1L;
+
+        Mockito.when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // when + then
+        assertThatThrownBy(() -> postService.deletePost(postId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Post not found");
+        Mockito.verify(postRepository, Mockito.never()).delete(any());
+    }
 }

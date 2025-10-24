@@ -25,4 +25,10 @@ public class PostService {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
     }
+
+    public void deletePost(Long postId) throws ResourceNotFoundException {
+        postRepository.findById(postId).ifPresentOrElse(postRepository::delete, () -> {
+            throw new ResourceNotFoundException("Post not found");
+        });
+    }
 }
