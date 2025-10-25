@@ -38,4 +38,14 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
+
+    @DeleteMapping("/{postId}")
+    ResponseEntity<ApiResponse> deletePost(@PathVariable Long postId) {
+        try {
+            postService.deletePost(postId);
+            return ResponseEntity.ok(new ApiResponse("success", null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
 }
