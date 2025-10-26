@@ -31,4 +31,8 @@ public class PostService {
             throw new ResourceNotFoundException("Post not found");
         });
     }
+
+    public List<Post> findPostsWithGivenPhrase(String phrase) {
+        return postRepository.findByContentContainingIgnoreCase(phrase);
+    }
 }

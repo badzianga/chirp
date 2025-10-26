@@ -23,6 +23,7 @@ public class PostRepositoryTest {
 
     @Test
     void shouldFindPostsByUserId() {
+        // given
         User user = userRepository.save(new User("test@email.com", "test", "password"));
         User anotherUser = userRepository.save(new User("another@email.com", "another", "password"));
         postRepository.save(new Post("Some content of the post", user));
@@ -31,6 +32,21 @@ public class PostRepositoryTest {
 
         // when
         List<Post> posts = postRepository.findByAuthor_Id(user.getId());
+
+        // then
+        assertThat(posts).hasSize(2);
+    }
+
+    @Test
+    void shouldFindPostsContainingPhrase() {
+        // given
+        User user = userRepository.save(new User("test@email.com", "test", "password"));
+        postRepository.save(new Post("Some content of the post", user));
+        postRepository.save(new Post("Another post", user));
+        postRepository.save(new Post("This should not be found", user));
+
+        // when
+        List<Post> posts = postRepository.findByContentContainingIgnoreCase("POST");
 
         // then
         assertThat(posts).hasSize(2);

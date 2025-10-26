@@ -117,4 +117,22 @@ public class PostServiceTest {
                 .hasMessageContaining("Post not found");
         Mockito.verify(postRepository, Mockito.never()).delete(any());
     }
+
+    @Test
+    void shouldGetPostsContainingGivenPhrase() {
+        // given
+        Post post1 = new Post("Content of the post", new User("test@email.com", "test", "password"));
+        Post post2 = new Post("Another post", new User("test2@email.com", "test2", "password"));
+
+        Mockito.when(postRepository.findByContentContainingIgnoreCase("POST")).thenReturn(List.of(post1, post2));
+
+        // when
+        List<Post> posts = postService.findPostsWithGivenPhrase("POST");
+
+        // then
+        assertThat(posts).hasSize(2);
+        assertThat(posts.get(0)).isEqualTo(post1);
+        assertThat(posts.get(1)).isEqualTo(post2);
+        Mockito.verify(postRepository, Mockito.times(1)).findByContentContainingIgnoreCase("POST");
+    }
 }
