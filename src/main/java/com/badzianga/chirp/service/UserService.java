@@ -30,6 +30,14 @@ public class UserService {
         return userRepository.save(new User(request.getEmail(), request.getUsername(), request.getPassword()));
     }
 
+    public User findUserById(Long id) throws ResourceNotFoundException {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            return user.get();
+        }
+        throw new ResourceNotFoundException("User not found");
+    }
+
     public User findUserByUsername(String username) throws ResourceNotFoundException {
         Optional<User> user = userRepository.findByUsernameIgnoreCase(username);
         if (user.isPresent()) {

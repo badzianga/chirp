@@ -2,6 +2,7 @@ package com.badzianga.chirp.controller;
 
 import com.badzianga.chirp.exception.ResourceNotFoundException;
 import com.badzianga.chirp.model.Post;
+import com.badzianga.chirp.request.CreatePostRequest;
 import com.badzianga.chirp.response.ApiResponse;
 import com.badzianga.chirp.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,16 @@ public class PostController {
     ResponseEntity<ApiResponse> getPost(@PathVariable Long postId) {
         try {
             Post post = postService.getPostById(postId);
+            return ResponseEntity.ok(new ApiResponse("success", post));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PostMapping
+    ResponseEntity<ApiResponse> createPost(@RequestBody CreatePostRequest request) {
+        try {
+            Post post = postService.createPost(request);
             return ResponseEntity.ok(new ApiResponse("success", post));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

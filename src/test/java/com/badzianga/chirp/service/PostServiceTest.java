@@ -4,6 +4,7 @@ import com.badzianga.chirp.exception.ResourceNotFoundException;
 import com.badzianga.chirp.model.Post;
 import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.repository.PostRepository;
+import com.badzianga.chirp.request.CreatePostRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,12 +18,14 @@ import static org.mockito.ArgumentMatchers.any;
 
 public class PostServiceTest {
     private PostRepository postRepository;
+    private UserService userService;
     private PostService postService;
 
     @BeforeEach
     public void setUp() {
         postRepository = Mockito.mock(PostRepository.class);
-        postService = new PostService(postRepository);
+        userService = Mockito.mock(UserService.class);
+        postService = new PostService(postRepository, userService);
     }
 
     @Test
@@ -85,6 +88,41 @@ public class PostServiceTest {
         assertThatThrownBy(() -> postService.getPostById(any()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Post not found");
+    }
+
+    @Test
+    void shouldCreatePost() {
+        // given
+        String content = "Content of the post";
+        Long authorId = 1L;
+        User author = new User("test@email.com", "test", "password");
+        author.setId(authorId);
+        Post post = new Post(content, author);
+
+        Mockito.when(userService.findUserById(1L)).thenReturn(author);
+        Mockito.when(postRepository.save(Mockito.any(Post.class))).thenReturn(post);
+
+        // when
+        Post createdPost = postService.createPost(new CreatePostRequest(content, authorId));
+
+        // then
+        assertThat(createdPost.getId()).isEqualTo(post.getId());
+        assertThat(createdPost.getContent()).isEqualTo(post.getContent());
+        assertThat(createdPost.getAuthor().getId()).isEqualTo(authorId);
+        Mockito.verify(postRepository, Mockito.times(1)).save(Mockito.any(Post.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotFoundDuringPostCreation() {
+        // given
+        Long authorId = 1L;
+
+        Mockito.when(userService.findUserById(authorId)).thenThrow(ResourceNotFoundException.class);
+
+        // when & then
+        assertThatThrownBy(() -> postService.createPost(new CreatePostRequest("content", authorId)))
+                .isInstanceOf(ResourceNotFoundException.class);
+        Mockito.verify(postRepository, Mockito.never()).save(any());
     }
 
     @Test

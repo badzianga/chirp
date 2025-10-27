@@ -75,6 +75,33 @@ public class UserServiceTest {
     }
 
     @Test
+    void shouldReturnUserWithGivenId() {
+        // given
+        User user = new User("test@email.com", "test", "password");
+        user.setId(1L);
+
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        // when
+        User foundUser = userService.findUserById(1L);
+
+        // then
+        assertThat(foundUser).isEqualTo(user);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserWithGivenIdIsNotFound() {
+        // given
+        Mockito.when(userRepository.findById(Mockito.any()))
+                .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> userService.findUserById(1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("User not found");
+    }
+
+    @Test
     void shouldReturnUserWithGivenUsername() {
         // given
         User user = new User("test@email.com", "test", "password");
