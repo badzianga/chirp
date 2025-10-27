@@ -17,7 +17,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime created;
+    private LocalDateTime createdAt;
     private String content;
 
     @ManyToOne
@@ -25,7 +25,7 @@ public class Post {
     private User author;
 
     public Post(String content, User author) {
-        this.created = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
         this.content = content;
         this.author = author;
     }
