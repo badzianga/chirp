@@ -11,13 +11,21 @@ All endpoints start with prefix `/api/v1`. When something is returned, it is wra
 
 ### auth
 
-- `POST /auth/register` - add a new user using request body {"email", "username", "password"} and return JSON with created
-user data
+- `POST /auth/register` - add a new user using request body {"email", "username", "password"} and return JSON with
+created user data
+
+### posts
+- `GET /posts` - return list of all posts
+- `GET /posts/{postId}` - return json with data of one post with given id
+- `POST /posts` - create a new post using request body {"content", "userId"} and return JSON with created post data
+- `DELETE /posts/{postID}` - delete post from the database
 
 ### search
 - `GET /search/users?query={username}` - return list of users with username similar to passed as request param
+- `GET /search/posts?query={phrase}` - return list of posts containing phrase passed as request param
 
-### user
+### users
 
 - `GET /users` - return list of all registered users
 - `GET /users/{username}` - return json with data of the found user
+- `DELETE /users/{userId}` - delete user from the database
