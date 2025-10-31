@@ -5,7 +5,11 @@ import com.badzianga.chirp.exception.UserAlreadyExistsException;
 import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.repository.UserRepository;
 import com.badzianga.chirp.request.CreateUserRequest;
+import com.badzianga.chirp.request.LoginRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +21,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -57,5 +62,13 @@ public class UserService {
         userRepository.findById(userId).ifPresentOrElse(userRepository::delete, () -> {
             throw new ResourceNotFoundException("User with given id does not exist");
         });
+    }
+
+    public boolean verify(LoginRequest request) {
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+
+        return authentication.isAuthenticated();
     }
 }
