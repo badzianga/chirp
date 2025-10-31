@@ -6,7 +6,7 @@ import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.repository.UserRepository;
 import com.badzianga.chirp.request.CreateUserRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+    private final PasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -30,7 +29,7 @@ public class UserService {
         if (userRepository.existsByUsernameIgnoreCase(request.getUsername())) {
             throw new UserAlreadyExistsException("This username is taken");
         }
-        String newPassword = passwordEncoder.encode(request. getPassword());
+        String newPassword = passwordEncoder.encode(request.getPassword());
         return userRepository.save(new User(request.getEmail(), request.getUsername(), newPassword));
     }
 
