@@ -2,8 +2,8 @@ package com.badzianga.chirp.controller;
 
 import com.badzianga.chirp.exception.UserAlreadyExistsException;
 import com.badzianga.chirp.model.User;
-import com.badzianga.chirp.request.CreateUserRequest;
 import com.badzianga.chirp.request.LoginRequest;
+import com.badzianga.chirp.request.RegisterRequest;
 import com.badzianga.chirp.response.ApiResponse;
 import com.badzianga.chirp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> registerUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<ApiResponse> registerUser(@RequestBody RegisterRequest request) {
         try {
             User user = userService.addUser(request);
             return ResponseEntity.ok(new ApiResponse("success", user));
