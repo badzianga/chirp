@@ -22,6 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -64,11 +65,14 @@ public class UserService {
         });
     }
 
-    public boolean verify(LoginRequest request) {
+    public Optional<String> verify(LoginRequest request) {
         Authentication authentication =
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
-        return authentication.isAuthenticated();
+        if (authentication.isAuthenticated()) {
+            return Optional.of(jwtService.generateToken(request.username()));
+        }
+        return Optional.empty();
     }
 }

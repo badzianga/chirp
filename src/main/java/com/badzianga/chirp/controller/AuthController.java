@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/auth")
@@ -33,8 +35,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> loginUser(@RequestBody LoginRequest request) {
         // TODO: use try/catch here
-        if (userService.verify(request)) {
-            return ResponseEntity.ok(new ApiResponse("success", null));
+        Optional<String> response = userService.verify(request);
+        if (response.isPresent()) {
+            return ResponseEntity.ok(new ApiResponse("success", response));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse("unauthorized", null));
     }
