@@ -1,16 +1,9 @@
 package com.badzianga.chirp.service;
 
 import com.badzianga.chirp.exception.ResourceNotFoundException;
-import com.badzianga.chirp.exception.UserAlreadyExistsException;
 import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.repository.UserRepository;
-import com.badzianga.chirp.request.LoginRequest;
-import com.badzianga.chirp.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,23 +13,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
-    }
-
-    public User addUser(RegisterRequest request) throws UserAlreadyExistsException {
-        if (userRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new UserAlreadyExistsException("User with this email is already registered");
-        }
-        if (userRepository.existsByUsernameIgnoreCase(request.username())) {
-            throw new UserAlreadyExistsException("This username is taken");
-        }
-        String newPassword = passwordEncoder.encode(request.password());
-        return userRepository.save(new User(request.email(), request.username(), newPassword));
     }
 
     public User findUserById(Long id) throws ResourceNotFoundException {
@@ -63,16 +42,5 @@ public class UserService {
         userRepository.findById(userId).ifPresentOrElse(userRepository::delete, () -> {
             throw new ResourceNotFoundException("User with given id does not exist");
         });
-    }
-
-    public Optional<String> verify(LoginRequest request) {
-        Authentication authentication =
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-
-        if (authentication.isAuthenticated()) {
-            return Optional.of(jwtService.generateToken(request.username()));
-        }
-        return Optional.empty();
     }
 }

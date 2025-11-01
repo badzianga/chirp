@@ -1,11 +1,11 @@
 package com.badzianga.chirp.controller;
 
+import com.badzianga.chirp.exception.AuthenticationFailedException;
 import com.badzianga.chirp.exception.UserAlreadyExistsException;
-import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.request.LoginRequest;
 import com.badzianga.chirp.request.RegisterRequest;
 import com.badzianga.chirp.response.ApiResponse;
-import com.badzianga.chirp.service.UserService;
+import com.badzianga.chirp.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,19 +14,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/auth")
 public class AuthController {
-    private final UserService userService;
+    private final AuthService authService;
 
+    // TODO: verify request fields
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> registerUser(@RequestBody RegisterRequest request) {
         try {
-            User user = userService.addUser(request);
-            return ResponseEntity.ok(new ApiResponse("success", user));
+            authService.register(request);
+            return ResponseEntity.ok(new ApiResponse("success", null));
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
@@ -34,11 +33,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> loginUser(@RequestBody LoginRequest request) {
-        // TODO: use try/catch here
-        Optional<String> response = userService.verify(request);
-        if (response.isPresent()) {
-            return ResponseEntity.ok(new ApiResponse("success", response));
+        try {
+            String token = authService.login(request);
+            return ResponseEntity.ok(new ApiResponse("success", token));
+        } catch (AuthenticationFailedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(e.getMessage(), null));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse("unauthorized", null));
     }
 }
