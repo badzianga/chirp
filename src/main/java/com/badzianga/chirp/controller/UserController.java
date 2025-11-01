@@ -7,6 +7,7 @@ import com.badzianga.chirp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<ApiResponse> getAllUsers() {
         List<User> users = userService.getAllUsers();
@@ -33,6 +35,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long userId) {
         try {

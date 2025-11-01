@@ -8,6 +8,7 @@ import com.badzianga.chirp.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class PostController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     ResponseEntity<ApiResponse> createPost(@RequestBody CreatePostRequest request) {
         try {
@@ -50,6 +52,7 @@ public class PostController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{postId}")
     ResponseEntity<ApiResponse> deletePost(@PathVariable Long postId) {
         try {
