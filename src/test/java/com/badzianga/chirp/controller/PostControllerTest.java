@@ -1,6 +1,7 @@
 package com.badzianga.chirp.controller;
 
 import com.badzianga.chirp.exception.ResourceNotFoundException;
+import com.badzianga.chirp.filter.JwtAuthFilter;
 import com.badzianga.chirp.model.Post;
 import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.request.CreatePostRequest;
@@ -11,6 +12,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,7 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(PostController.class)
+@WebMvcTest(controllers = PostController.class, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthFilter.class)
+})
 @ActiveProfiles("test")
 public class PostControllerTest {
     @Autowired

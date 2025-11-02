@@ -1,5 +1,6 @@
 package com.badzianga.chirp.controller;
 
+import com.badzianga.chirp.filter.JwtAuthFilter;
 import com.badzianga.chirp.model.Post;
 import com.badzianga.chirp.model.User;
 import com.badzianga.chirp.service.PostService;
@@ -9,6 +10,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -20,7 +23,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(SearchController.class)
+@WebMvcTest(controllers = SearchController.class, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthFilter.class)
+})
 @ActiveProfiles("test")
 public class SearchControllerTest {
     @Autowired
